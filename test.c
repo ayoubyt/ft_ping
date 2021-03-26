@@ -208,9 +208,8 @@ void recv_packet()
 
         alarm(MAX_WAIT_TIME);
 
-        if ((n = recvfrom(sockfd, recvpacket, sizeof(recvpacket), 0, (struct
-
-                                                                      sockaddr *)&from,
+        if ((n = recvfrom(sockfd, recvpacket, sizeof(recvpacket), 0, 
+        (struct sockaddr *)&from,
                           &fromlen)) < 0)
 
         {
