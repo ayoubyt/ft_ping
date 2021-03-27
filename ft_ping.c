@@ -59,6 +59,39 @@ int main()
         perror("sendto error");
         exit(EXIT_FAILURE);
     }
+    printf("icmp packet sent with id = %u, seq = %u\n", ntohs(icmp.icmp_id), ntohs(icmp.icmp_seq));
+
+    /*
+    ** receive socket
+    */
+    char rcvbuff[1024];
+    struct iovec iovec[1];
+    struct msghdr msg;
+    struct sockaddr_in from_addr;
+
+    bzero(&from_addr, sizeof(from_addr));
+    bzero(&msg, sizeof(msg));
+
+    iovec[0].iov_base = rcvbuff;
+    iovec[0].iov_len = sizeof(rcvbuff);
+    msg.msg_iov = iovec;
+    msg.msg_iovlen = 1;
+    msg.msg_name = &from_addr;
+    msg.msg_namelen = sizeof(from_addr);
+
+    r = recvmsg(socket_fd, &msg, 0);
+    if (r < 0)
+    {
+        perror("recmsg");
+        exit(EXIT_FAILURE);
+    }
+
+    struct ip *src_ip = (struct ip *)rcvbuff;
+    struct icmp *rcv_icmp = (struct icmp *)(rcvbuff + src_ip->ip_hl * 4);
+
+    printf("icmp packet RECEIVED with id = %u, seq = %u\n", ntohs(rcv_icmp->icmp_id), ntohs(rcv_icmp->icmp_seq));
+
+    // printf("pi protocol = %u\n", src_ip->ip_p);
 
     close(socket_fd);
 }
