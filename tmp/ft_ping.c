@@ -54,12 +54,29 @@ int main()
     // printf("%d\n", checksum);
     // sending data
 
+
+    /*
+    **  print usfull data
+    */
+
+
+    unsigned ttl;
+    unsigned ttllen;
+    r = getsockopt(socket_fd, IPPROTO_IP, IP_TTL, &ttl, &ttllen);
+    if (r < 0)
+    {
+        perror("sendto error");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("icmp packet sent with id = %u, seq = %u, ttl = %u, ttlen = %u\n", ntohs(icmp.icmp_id), ntohs(icmp.icmp_seq),  ttl, ttllen);
+
+
     if (sendto(socket_fd, &icmp, sizeof(icmp), 0, res->ai_addr, sizeof(*res->ai_addr)) < 0)
     {
         perror("sendto error");
         exit(EXIT_FAILURE);
     }
-    printf("icmp packet sent with id = %u, seq = %u\n", ntohs(icmp.icmp_id), ntohs(icmp.icmp_seq));
 
     /*
     ** receive socket
@@ -89,7 +106,7 @@ int main()
     struct ip *src_ip = (struct ip *)rcvbuff;
     struct icmp *rcv_icmp = (struct icmp *)(rcvbuff + src_ip->ip_hl * 4);
 
-    printf("icmp packet RECEIVED with id = %u, seq = %u\n", ntohs(rcv_icmp->icmp_id), ntohs(rcv_icmp->icmp_seq));
+    printf("icmp packet RECEIVED with id = %u, seq = %u, ttl = %u\n", ntohs(rcv_icmp->icmp_id), ntohs(rcv_icmp->icmp_seq), src_ip->ip_ttl);
 
     // printf("pi protocol = %u\n", src_ip->ip_p);
 
