@@ -6,7 +6,7 @@ BUILD_DIR := build
 
 HEADERS_DIR := includes
 
-SRCS := main.c argparse.c
+SRCS := main.c argparse.c send.c
 
 
 

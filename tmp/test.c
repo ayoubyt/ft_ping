@@ -12,10 +12,10 @@
    OR
   # ./out google.com */
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include <sys/time.h>
-
 #include <signal.h>
 
 #include <arpa/inet.h>
@@ -42,7 +42,7 @@
 
 #define MAX_WAIT_TIME 5
 
-#define MAX_NO_PACKETS 3
+#define MAX_NO_PACKETS 5
 
 char sendpacket[PACKET_SIZE];
 
@@ -146,11 +146,11 @@ int pack(int pack_no)
 
     icmp->icmp_cksum = 0;
 
-    icmp->icmp_seq = htons(pack_no);
+    icmp->icmp_seq = pack_no;
 
-    icmp->icmp_id = htons(pid);
+    icmp->icmp_id = pid;
 
-    packsize = sizeof(icmp);
+    packsize = 8 + datalen;
 
     tval = (struct timeval *)icmp->icmp_data;
 
@@ -158,8 +158,6 @@ int pack(int pack_no)
 
     icmp->icmp_cksum = cal_chksum((unsigned short *)icmp, packsize);
 
-    printf("checksum = %d, icmp_id = %d, icmp_sec = %d\n",
-    icmp->icmp_cksum, icmp->icmp_id, icmp->icmp_seq);
     return packsize;
 }
 
@@ -210,8 +208,9 @@ void recv_packet()
 
         alarm(MAX_WAIT_TIME);
 
-        if ((n = recvfrom(sockfd, recvpacket, sizeof(recvpacket), 0,
-        (struct sockaddr *)&from,
+        if ((n = recvfrom(sockfd, recvpacket, sizeof(recvpacket), 0, (struct
+
+                                                                      sockaddr *)&from,
                           &fromlen)) < 0)
 
         {
@@ -265,7 +264,7 @@ int unpack(char *buf, int len)
         return -1;
     }
 
-    if ((icmp->icmp_type == ICMP_ECHOREPLY) && (ntohs(icmp->icmp_id) == pid))
+    if ((icmp->icmp_type == ICMP_ECHOREPLY) && (icmp->icmp_id == pid))
 
     {
 
@@ -277,7 +276,7 @@ int unpack(char *buf, int len)
 
         printf("%d byte from %s: icmp_seq=%u ttl=%d rtt=%.3f ms\n", len,
 
-               inet_ntoa(from.sin_addr), ntohs(icmp->icmp_seq), ip->ip_ttl, rtt);
+               inet_ntoa(from.sin_addr), icmp->icmp_seq, ip->ip_ttl, rtt);
     }
 
     else
@@ -356,7 +355,6 @@ int main(int argc, char *argv[])
     pid = getpid();
 
     printf("PING %s(%s): %d bytes data in ICMP packets.\n", argv[1], inet_ntoa
-
            (dest_addr.sin_addr),
            datalen);
 
