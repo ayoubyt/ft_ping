@@ -1,6 +1,6 @@
 #include "ft_ping.h"
 
-int main()
+int main(int argc, char **argv)
 {
     int socket_fd;
     struct sockaddr_in dst_addr;
@@ -22,8 +22,9 @@ int main()
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_RAW;
     hints.ai_protocol = IPPROTO_ICMP;
+    hints.ai_flags = AI_CANONNAME;
     int r;
-    if ((r = getaddrinfo("google.com", NULL, &hints, &res)) < 0)
+    if ((r = getaddrinfo(argv[1], NULL, &hints, &res)) < 0)
     {
         fprintf(stderr, "getaddrinfo : %s\n", gai_strerror(r));
         exit(EXIT_FAILURE);
@@ -33,7 +34,8 @@ int main()
     {
         struct sockaddr_in *saddr = (struct sockaddr_in *)curent->ai_addr;
         char buff[1024];
-        printf("%s\n", inet_ntop(AF_INET, &saddr->sin_addr.s_addr, buff, sizeof(buff)));
+        printf("addr = %s\n", inet_ntop(AF_INET, &saddr->sin_addr.s_addr, buff, sizeof(buff)));
+        printf("canname = %s\n", res->ai_canonname);
     }
 
     bzero(&icmp, sizeof(icmp));

@@ -6,11 +6,11 @@ BUILD_DIR := build
 
 HEADERS_DIR := includes
 
-SRCS := main.c
+SRCS := main.c argparse.c
 
 
 
-HEADERS =
+HEADERS = ft_ping.h
 
 
 ################## libft ################
