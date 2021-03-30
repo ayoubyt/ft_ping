@@ -2,7 +2,7 @@
 
 state_t state;
 
-int main()
+int main(int argc, char **argv)
 {
     // socket descriptor
     int sd;
@@ -14,6 +14,12 @@ int main()
     struct addrinfo hints;
     // a tmp variable to store return values
     int r;
+    uint8_t *icmp_packet;
+    uint16_t icmp_packet_size;
+
+    // parsing flags and command line options
+    // populating state.flags and state.dst with appropriate values
+    arg_parse(argc, argv);
 
     // creating a raw socket to work with icmp packets
     // eathernet and ip headers are handled by kernel
@@ -34,16 +40,20 @@ int main()
         exit(EXIT_FAILURE);
     }
 
+    icmp_packet_size = sizeof(struct icmphdr) + state.flags.s;
+    icmp_packet = make_icmp_packet(icmp_packet_size);
+
     while (TRUE)
     {
-        //send_icmp_packet
-        //recp_icmp_packet 
+        send_icmp_packet(sd, dst_addrinfos, icmp_packet, icmp_packet_size);
+        if (state.flags.c && state.nsent >= state.flags.c)
+            break;
     }
 }
 
 // int main(int argc, char**argv)
 // {
-//     arg_parse(argc, argv);
+//     printf("%lu\n", sizeof(struct icmphdr));
 // }
 
 void error_and_exit(const char *msg)

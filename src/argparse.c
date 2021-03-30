@@ -5,22 +5,33 @@ void arg_parse(int argc, char **argv)
     char c;
 
     // setting default values
-    state.flags.i = 1;
+    // other values are zeroed (by default in gloal variable)
+    state.flags.s = DDSIZE;
+    state.flags.i = DTI;
 
-    while ((c = getopt(argc, argv, ":c:i:t:s:f:")) != -1)
+    while ((c = getopt(argc, argv, ":c:i:t:s:fv")) != -1)
         switch (c)
         {
         case 'c':
-            state.flags.c = get_int(c, optarg);
+            state.flags.c = get_int(c, optarg, 1, -1);
+            break;
+        case 't':
+            state.flags.t = get_int(c, optarg, 1, MAXTTL);
+            break;
+        case 's':
+            state.flags.s = get_int(c, optarg, 0, -1);
+            break;
+        case 'f':
+            state.flags.f = 1;
             break;
         case 'i':
             state.flags.i = get_double(c, optarg);
             break;
-        case 't':
-            state.flags.t = get_int(c, optarg);
+        case 'v':
+            state.flags.v = 1;
             break;
-        case 's':
-            state.flags.s = get_int(c, optarg);
+        case 'h':
+            state.flags.h = 1;
             break;
         case '?':
             fprintf(stderr, "error : unknown option `-%c'.\n", optopt);
@@ -31,27 +42,34 @@ void arg_parse(int argc, char **argv)
         }
     if (optind == argc)
     {
-        fprintf(stderr, "error : destination address required\n", optopt);
+        fprintf(stderr, "error : destination address required\n");
         exit(EXIT_FAILURE);
     }
     state.dst = argv[optind];
 }
 
-uint get_int(char opt, char *str)
+uint get_int(char opt, char *str, int min, int max)
 {
-    uint result;
+    uint    result;
+    int     r;
 
-    if (!ft_isnumeric_str(str))
+    r = sscanf(str, "%u", &result);
+    if (r != 1)
     {
         fprintf(stderr, "error : invalid argument to -%c : '%s'\n", opt, str);
         exit(EXIT_FAILURE);
     }
-    result = ft_atoi(str);
-    if (result < 1)
+    if (min > -1 && result < min)
     {
-        fprintf(stderr, "error : invalid argument to -%c : '%s' is less than the min value '1'\n", opt, str);
+        fprintf(stderr, "error : invalid argument to -%c : min value is %d while %d specified.", opt, min, result);
         exit(EXIT_FAILURE);
     }
+    if (max > -1 && result > min)
+    {
+        fprintf(stderr, "error : invalid argument to -%c : max value is %d while %d specified.", opt, max, result);
+        exit(EXIT_FAILURE);
+    }
+
     return result;
 }
 

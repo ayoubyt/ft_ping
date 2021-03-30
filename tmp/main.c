@@ -4,9 +4,17 @@
 
 
 int main(int argc, char **argv){
-    double d;
+    u_int16_t u = 0;
+    char c = 'a';
 
-    printf("%d\n", sscanf(argv[1], "%lf", &d));
-    printf("%lf\n", d);
-    // printf("%d\n", errno);
+
+    u = c;
+    char *data = (char*)&u;
+
+    for (size_t i = 0; i < 2; i++)
+    {
+        printf("%02x ", data[i]);
+    }
+    printf("\n");
+
 }
