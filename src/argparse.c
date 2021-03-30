@@ -7,7 +7,7 @@ void arg_parse(int argc, char **argv)
     // setting default values
     state.flags.i = 1;
 
-    while ((c = getopt(argc, argv, ":c:i:t:s:")) != -1)
+    while ((c = getopt(argc, argv, ":c:i:t:s:f:")) != -1)
         switch (c)
         {
         case 'c':
