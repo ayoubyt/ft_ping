@@ -14,13 +14,11 @@ int main(int argc, char **argv)
     struct addrinfo hints;
     // a tmp variable to store return values
     int r;
-    uint8_t *icmp_packet;
-    uint16_t icmp_packet_size;
+    uint8_t *sendbuff;
+    uint16_t sendbuffsize;
     // buffer to put received icmp packts data on
     uint8_t *rcvbuff;
     int rcvbuffsize;
-    int ihl;
-    int ihllen;
 
     // setting id of all sent icmp packet to currrent
     // process id to filter incoming icmp packets based on it
@@ -36,12 +34,6 @@ int main(int argc, char **argv)
     if (sd < 0)
         error_and_exit("error : socket ");
 
-    // getting internet header length with in this
-    // case, specified by kernel
-    r = getsockopt(sd, IPPROTO_IP, IP_TTL);
-    if (r < 0)
-        error_and_exit("error : getsockopt ");
-
     // putting destination address information in
     // 'dst_addrinfos' linked list
     ft_bzero(&hints, sizeof(hints));
@@ -55,14 +47,17 @@ int main(int argc, char **argv)
         fprintf(stderr, "error : getaddrinfo : %s\n", gai_strerror(r));
         exit(EXIT_FAILURE);
     }
-    state.dst_caninical_name = dst_addrinfos->ai_canonname;
+    state.dst_canonical_name = dst_addrinfos->ai_canonname;
 
-    icmp_packet_size = sizeof(struct icmphdr) + state.flags.s;
     //  icmp packet to send wich contains
     //  icmp header (8 byes) + data
-    icmp_packet = make_icmp_packet(icmp_packet_size);
-    // size is : 60 (max internet header kength (ihl) * 4) + icmp packet size
-    rcvbuffsize = 60 + icmp_packet_size;
+    sendbuffsize = sizeof(struct icmphdr) + state.flags.s;
+    sendbuff = malloc(sendbuffsize);
+    if (!sendbuff)
+        error_and_exit("error : malloc ");
+
+    // size is : ip header (with no options) + icmp packet size
+    rcvbuffsize = sizeof(struct ip) + sendbuffsize;
     rcvbuff = malloc(rcvbuffsize);
     if (!rcvbuff)
         error_and_exit("error : malloc ");
@@ -70,15 +65,31 @@ int main(int argc, char **argv)
     state.loop = 1;
     while (state.loop)
     {
-        send_icmp_packet(sd, dst_addrinfos, icmp_packet, icmp_packet_size);
+        send_icmp_packet(sd, dst_addrinfos, sendbuff, sendbuffsize);
+        receive_icmp_packet(sd, rcvbuff, rcvbuffsize);
         if (state.flags.c && state.nsent >= state.flags.c)
-            state.loop = 0;
+            break;
+        usleep(state.flags.i * 1e6);
     }
 }
 
-// int main(int argc, char**argv)
+// int main()
 // {
-//     printf("%lu\n", sizeof(struct iphdr));
+//     uint16_t u = 5 * 6;
+//     uint16_t ru;
+
+//     // char c = 'a';
+//     // u = c;
+//     ru = RBS(5 * 6);
+
+//     char *data = (char *)&u;
+//     for (size_t i = 0; i < 2; i++)
+//         printf("%02x ", data[i]);
+//     printf("\n");
+//     data = (char *)&ru;
+//     for (size_t i = 0; i < 2; i++)
+//         printf("%02x ", data[i]);
+//     printf("\n");
 // }
 
 void error_and_exit(const char *msg)

@@ -2,12 +2,14 @@
 
 void send_icmp_packet(int sd,
                       struct addrinfo *dst_addrinfo,
-                      uint8_t *packet,
-                      uint16_t packet_size)
+                      uint8_t *sendbuff,
+                      uint16_t sendbuffsize)
 {
     int r;
 
-    r = sendto(sd, packet, packet_size, 0, dst_addrinfo->ai_addr, sizeof(*dst_addrinfo->ai_addr));
+    put_icmphdr(sendbuff, sendbuffsize);
+
+    r = sendto(sd, sendbuff, sendbuffsize, 0, dst_addrinfo->ai_addr, sizeof(*dst_addrinfo->ai_addr));
     if (r < 0)
     {
         perror("error : sendto ");
@@ -28,8 +30,8 @@ void put_icmphdr(void *packet, uint16_t size)
 
     ft_bzero(res, sizeof(*res));
     res->type = ICMP_ECHO;
-    res->un.echo.id = STOBS(pid);
-    res->un.echo.sequence = STOBS(seq);
+    res->un.echo.id = RBS(pid);
+    res->un.echo.sequence = RBS(seq);
 
     res->checksum = checksum(packet, size);
 }

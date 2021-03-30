@@ -1,6 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netdb.h>
+#include <netinet/ip_icmp.h>
+#include <arpa/inet.h>
+
 
 
 int main(int argc, char **argv){

@@ -6,12 +6,9 @@ BUILD_DIR := build
 
 HEADERS_DIR := includes
 
-SRCS := main.c argparse.c send.c
-
-
+SRCS := main.c argparse.c send.c receive.c utils.c
 
 HEADERS = ft_ping.h
-
 
 ################## libft ################
 
@@ -32,7 +29,7 @@ LIBFT_HEADERS_DIR := $(LIBFT_DIR)/$(LIBFT_HEADERS_DIR)
 LIBFT := $(LIBFT_DIR)/$(LIBFT_BIN_DIR)/lib$(LIBFT_SUFF).a
 
 CC := gcc
-CCFLAGS := -O3 -g
+CCFLAGS := -O3
 CCLINKFLAGS =
 
 # $(info $(SRCS_DIR) " :: " $(SRCS))
@@ -67,7 +64,6 @@ re: fclean all
 re-all: re
 	make re -C $(LIBFT_BIN_DIR)
 
-# .PHONY : $(LIBFT)
 
 .PHONY:
 	all clean fclean re-all libft
