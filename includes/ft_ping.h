@@ -10,7 +10,7 @@
 #include "libft.h"
 
 // default data size after icmp header
-#define DDSIZE 54
+#define DDSIZE 56
 // defaulr timr interval in secons beteen each
 // sent icmp packet
 #define DTI 1
@@ -34,9 +34,12 @@ typedef struct
 {
     flags_t flags;
     char *dst;
+    char *dst_caninical_name;
     int nreceived; // number of icmp received
     int nsent; // number of icmp packets sent
     int pack_seq; // icmp packet sequence counter
+    int pack_id; // icmp packet id
+    int loop; // packet sender loop condition
 } state_t;
 
 extern state_t state;

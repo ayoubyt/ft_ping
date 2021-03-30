@@ -186,7 +186,7 @@ void send_packet()
 
             continue;
         }
-        // sleep(1);
+        sleep(1);
     }
 }
 

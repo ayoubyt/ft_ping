@@ -63,11 +63,11 @@ int main(int argc, char **argv)
 
 
     unsigned ttl;
-    unsigned ttllen;
+    unsigned ttllen = sizeof(ttl);
     r = getsockopt(socket_fd, IPPROTO_IP, IP_TTL, &ttl, &ttllen);
     if (r < 0)
     {
-        perror("sendto error");
+        perror("getsockopt error");
         exit(EXIT_FAILURE);
     }
 

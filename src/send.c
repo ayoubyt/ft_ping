@@ -16,18 +16,6 @@ void send_icmp_packet(int sd,
     state.nsent++;
 }
 
-uint8_t *make_icmp_packet(uint16_t size)
-{
-    // icmp packet to send wich contains
-    // icmp header (8 byes) + data
-    uint8_t *icmp_packet;
-
-    icmp_packet = malloc(sizeof(struct icmphdr) + size);
-    put_icmphdr(icmp_packet, size);
-
-    return (icmp_packet);
-}
-
 void put_icmphdr(void *packet, uint16_t size)
 {
     struct icmphdr *res;
@@ -35,7 +23,7 @@ void put_icmphdr(void *packet, uint16_t size)
     uint16_t seq;
 
     res = (struct icmphdr *)packet;
-    pid = getpid();
+    pid = state.pack_id;
     seq = ++state.pack_seq;
 
     ft_bzero(res, sizeof(*res));
