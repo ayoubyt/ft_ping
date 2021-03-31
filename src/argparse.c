@@ -8,8 +8,10 @@ void arg_parse(int argc, char **argv)
     // other values are zeroed (by default in gloal variable)
     state.flags.s = DDSIZE;
     state.flags.i = DTI;
+    state.flags.W = RCV_TIMEOUT;
+    state.flags.t = IPDEFTTL;
 
-    while ((c = getopt(argc, argv, ":c:i:t:s:fv")) != -1)
+    while ((c = getopt(argc, argv, ":c:i:t:s:hvWf")) != -1)
         switch (c)
         {
         case 'c':
@@ -25,7 +27,10 @@ void arg_parse(int argc, char **argv)
             state.flags.f = 1;
             break;
         case 'i':
-            state.flags.i = get_double(c, optarg);
+            state.flags.i = get_double(c, optarg, 0, -1);
+            break;
+        case 'W':
+            state.flags.W = get_double(c, optarg, 0, -1);
             break;
         case 'v':
             state.flags.v = 1;
@@ -61,19 +66,19 @@ uint get_int(char opt, char *str, int min, int max)
     }
     if (min > -1 && result < min)
     {
-        fprintf(stderr, "error : invalid argument to -%c : min value is %d while %d specified.", opt, min, result);
+        fprintf(stderr, "error : invalid argument to -%c : min value is %d while %d specified.\n", opt, min, result);
         exit(EXIT_FAILURE);
     }
-    if (max > -1 && result > min)
+    if (max > -1 && result > max)
     {
-        fprintf(stderr, "error : invalid argument to -%c : max value is %d while %d specified.", opt, max, result);
+        fprintf(stderr, "error : invalid argument to -%c : max value is %d while %d specified.\n", opt, max, result);
         exit(EXIT_FAILURE);
     }
 
     return result;
 }
 
-double get_double(char opt, char *str)
+double get_double(char opt, char *str, double min, double max)
 {
     double result;
     int r;
@@ -82,6 +87,16 @@ double get_double(char opt, char *str)
     if (r != 1)
     {
         fprintf(stderr, "error : invalid argument to -%c : '%s'\n", opt, str);
+        exit(EXIT_FAILURE);
+    }
+     if (min > -1 && result < min)
+    {
+        fprintf(stderr, "error : invalid argument to -%c : min value is %lf while %lf specified.\n", opt, min, result);
+        exit(EXIT_FAILURE);
+    }
+    if (max > -1 && result > max)
+    {
+        fprintf(stderr, "error : invalid argument to -%c : max value is %lf while %lf specified.\n", opt, max, result);
         exit(EXIT_FAILURE);
     }
     return result;

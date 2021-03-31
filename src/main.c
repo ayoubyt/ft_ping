@@ -23,7 +23,8 @@ int main(int argc, char **argv)
     struct timeval start_tv;
     // end of sending packets time
     struct timeval end_tv;
-
+    // secket timeout time value
+    struct timeval timeout_tv;
 
     // setting id of all sent icmp packet to currrent
     // process id to filter incoming icmp packets based on it
@@ -32,12 +33,6 @@ int main(int argc, char **argv)
     // parsing flags and command line options
     // populating state.flags and state.dst with appropriate values
     arg_parse(argc, argv);
-
-    // creating a raw socket to work with icmp packets
-    // eathernet and ip headers are handled by kernel
-    sd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
-    if (sd < 0)
-        error_and_exit("error : socket ");
 
     // putting destination address information in
     // 'dst_addrinfos' linked list
@@ -54,6 +49,24 @@ int main(int argc, char **argv)
     }
     state.dst_canonical_name = dst_addrinfos->ai_canonname;
 
+    // creating a raw socket to work with icmp packets
+    // eathernet and ip headers are handled by kernel
+    sd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+    if (sd < 0)
+        error_and_exit("error : socket ");
+
+    // if -t option is given, set TTL of sent packet
+    // to its argument
+    r = setsockopt(sd, IPPROTO_IP, IP_TTL, &state.flags.t, sizeof(state.flags.t));
+    if (r < 0)
+        error_and_exit("error : setsockopt 1");
+
+    // setting timeout of socket receive wait time
+    timeout_tv.tv_sec = state.flags.W;
+    timeout_tv.tv_usec = (long)(state.flags.W * 1e6) % 1000000;
+    r = setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, &timeout_tv, sizeof(timeout_tv));
+    if (r < 0)
+        error_and_exit("error : setsockopt 2");
     //  icmp packet to send wich contains
     //  icmp header (8 byes) + data
     sendbuffsize = sizeof(struct icmphdr) + state.flags.s;
@@ -80,7 +93,7 @@ int main(int argc, char **argv)
     gettimeofday(&end_tv, 0);
 
     //  display stats
-    display_stats(((double)end_tv.tv_usec - start_tv.tv_usec) / 1000);
+    display_stats(TVMSDIFF(end_tv, start_tv));
 }
 
 // int main()

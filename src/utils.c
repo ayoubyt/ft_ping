@@ -6,9 +6,8 @@ void display_stats(long time_elapsed)
 
     printf("--- %s ping statistics ---\n", state.dst_canonical_name);
     printf("%d packets transmitted, %d received, %d%% packet loss, time %ldms\n",
-    state.nsent,
-    state.nreceived,
-    loss,
-    time_elapsed
-    );
+           state.nsent,
+           state.nreceived,
+           loss,
+           time_elapsed);
 }
