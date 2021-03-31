@@ -6,10 +6,18 @@ void send_icmp_packet(int sd,
                       uint16_t sendbuffsize)
 {
     int r;
+    struct timeval tv;
+
+
 
     put_icmphdr(sendbuff, sendbuffsize);
-
-    r = sendto(sd, sendbuff, sendbuffsize, 0, dst_addrinfo->ai_addr, sizeof(*dst_addrinfo->ai_addr));
+    gettimeofday(&state.time.last_req_tv, 0);
+    r = sendto(sd,
+               sendbuff,
+               sendbuffsize,
+               0,
+               dst_addrinfo->ai_addr,
+               sizeof(*dst_addrinfo->ai_addr));
     if (r < 0)
     {
         perror("error : sendto ");
