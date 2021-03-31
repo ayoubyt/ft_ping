@@ -67,6 +67,8 @@ uint16_t checksum(uint8_t *data, uint16_t size);
 
 void receive_icmp_packet(int sd, uint8_t *rcvbuff, int rcvbuffsize);
 
+void display_stats(long time_elapsed);
+
 extern state_t state;
 
 #endif // FT_PING_H

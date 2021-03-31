@@ -31,6 +31,7 @@ void receive_icmp_packet(int sd, uint8_t *rcvbuff, int rcvbuffsize)
     r = recvmsg(sd, &msghdr, 0);
     if (r < 0)
         error_and_exit("error : recvmsg");
+    state.nreceived++;
 
     gettimeofday(&current, 0);
     

@@ -274,11 +274,12 @@ int main(int argc, char *argv[])
     else
         printf("\nSocket file descriptor %d received\n", sockfd);
   
-    signal(SIGINT, intHandler);//catching interrupt
+    signal(SIGINT, intHandler); //catching interrupt
   
     //send pings continuously
     send_ping(sockfd, &addr_con, reverse_hostname, 
                                  ip_addr, argv[1]);
+    
       
     return 0;
 }

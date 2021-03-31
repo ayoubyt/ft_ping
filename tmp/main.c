@@ -6,21 +6,21 @@
 #include <netdb.h>
 #include <netinet/ip_icmp.h>
 #include <arpa/inet.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 
 
 int main(int argc, char **argv){
-    u_int16_t u = 0;
-    char c = 'a';
+    struct timeval s;
+    struct timeval e;
+    int r;
 
+    r = gettimeofday(&s, 0);
+    printf("r = %d\n", r);
+    sleep(1);
 
-    u = c;
-    char *data = (char*)&u;
-
-    for (size_t i = 0; i < 2; i++)
-    {
-        printf("%02x ", data[i]);
-    }
-    printf("\n");
-
+    r= gettimeofday(&e, 0);
+    printf("r = %d\n", r);
+    printf("ms = %ld\n", (e.tv_usec - s.tv_usec) / 1000);
 }

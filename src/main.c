@@ -19,6 +19,11 @@ int main(int argc, char **argv)
     // buffer to put received icmp packts data on
     uint8_t *rcvbuff;
     int rcvbuffsize;
+    // packet sending start time
+    struct timeval start_tv;
+    // end of sending packets time
+    struct timeval end_tv;
+
 
     // setting id of all sent icmp packet to currrent
     // process id to filter incoming icmp packets based on it
@@ -62,6 +67,7 @@ int main(int argc, char **argv)
     if (!rcvbuff)
         error_and_exit("error : malloc ");
 
+    gettimeofday(&start_tv, 0);
     state.loop = 1;
     while (state.loop)
     {
@@ -71,6 +77,10 @@ int main(int argc, char **argv)
             break;
         usleep(state.flags.i * 1e6);
     }
+    gettimeofday(&end_tv, 0);
+
+    //  display stats
+    display_stats(((double)end_tv.tv_usec - start_tv.tv_usec) / 1000);
 }
 
 // int main()
