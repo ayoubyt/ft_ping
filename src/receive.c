@@ -77,41 +77,54 @@ void handle_packet(uint8_t *packet)
 void print_packet(struct ip *ip, struct icmp *icmp, double timerange)
 {
     static char source_addr_str[INET_ADDRSTRLEN + 1] = {0};
+    struct addrinfo *sender_addrinfos;
 
+    inet_ntop(AF_INET, &ip->ip_src.s_addr, source_addr_str, sizeof(source_addr_str) - 1);
+    sender_addrinfos = get_sender_addrinfo(source_addr_str);
     printf(
         "%hu bytes from %s (%s): icmp_seq=%hu ttl=%hu time=%.1lf ms\n",
         RBS(ip->ip_len) - ip->ip_hl * 4,
-        state.dst_canonical_name,
-        inet_ntop(AF_INET, &ip->ip_src.s_addr, source_addr_str, sizeof(source_addr_str)),
+        sender_addrinfos->ai_canonname,
+        source_addr_str,
         RBS(icmp->icmp_seq),
         ip->ip_ttl,
         timerange);
+    freeaddrinfo(sender_addrinfos);
 }
 
 void print_error_packet(struct ip *ip, struct icmp *nicmp, uint8_t error)
 {
     static char source_addr_str[INET_ADDRSTRLEN + 1] = {0};
+    struct addrinfo *sender_addrinfos;
+
+    inet_ntop(AF_INET, &ip->ip_src.s_addr, source_addr_str, sizeof(source_addr_str) - 1);
+    sender_addrinfos = get_sender_addrinfo(source_addr_str);
+
     printf(
         "%hu bytes from %s (%s): icmp_seq=%hu ",
         RBS(ip->ip_len) - ip->ip_hl * 4,
-        state.dst_canonical_name,
-        inet_ntop(AF_INET, &ip->ip_src.s_addr, source_addr_str, sizeof(source_addr_str)),
+        sender_addrinfos->ai_canonname,
+        source_addr_str,
         RBS(nicmp->icmp_seq));
     switch (error)
     {
     case ICMP_TIME_EXCEEDED:
         printf("Time to live exceeded\n");
         break;
+    case ICMP_DEST_UNREACH:
+        printf("Destination Host Unreachable\n");
+        break;
     default:
         printf("\n");
         break;
     }
+    freeaddrinfo(sender_addrinfos);
 }
 
-void get_sender_addrinfo(char *addr)
+struct addrinfo *get_sender_addrinfo(char *addr)
 {
     struct addrinfo hints;
-    struct addrinfo *dst_addrinfos;
+    struct addrinfo *sender_addrinfos;
     int r;
 
     ft_bzero(&hints, sizeof(hints));
@@ -119,10 +132,11 @@ void get_sender_addrinfo(char *addr)
     hints.ai_socktype = SOCK_RAW;
     hints.ai_protocol = IPPROTO_ICMP;
     hints.ai_flags = AI_CANONNAME;
-    r = getaddrinfo(state.dst, NULL, &hints, &dst_addrinfos);
+    r = getaddrinfo(addr, NULL, &hints, &sender_addrinfos);
     if (r < 0)
     {
         fprintf(stderr, "error : getaddrinfo : %s\n", gai_strerror(r));
         exit(EXIT_FAILURE);
     }
+    return sender_addrinfos;
 }

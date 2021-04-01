@@ -80,6 +80,7 @@ uint16_t checksum(uint8_t *data, uint16_t size);
 
 void receive_icmp_packet(int sd, uint8_t *rcvbuff, int rcvbuffsize);
 void handle_packet(uint8_t *packet);
+struct addrinfo *get_sender_addrinfo(char *addr);
 void print_packet(struct ip *ip, struct icmp *icmp, double timerange);
 void print_error_packet(struct ip *ip, struct icmp *nicmp, uint8_t error);
 
