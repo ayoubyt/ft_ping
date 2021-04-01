@@ -107,3 +107,22 @@ void print_error_packet(struct ip *ip, struct icmp *nicmp, uint8_t error)
         break;
     }
 }
+
+void get_sender_addrinfo(char *addr)
+{
+    struct addrinfo hints;
+    struct addrinfo *dst_addrinfos;
+    int r;
+
+    ft_bzero(&hints, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_RAW;
+    hints.ai_protocol = IPPROTO_ICMP;
+    hints.ai_flags = AI_CANONNAME;
+    r = getaddrinfo(state.dst, NULL, &hints, &dst_addrinfos);
+    if (r < 0)
+    {
+        fprintf(stderr, "error : getaddrinfo : %s\n", gai_strerror(r));
+        exit(EXIT_FAILURE);
+    }
+}
