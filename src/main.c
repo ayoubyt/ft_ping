@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 
     // setting timeout of socket receive wait time
     timeout_tv.tv_sec = state.flags.W;
-    timeout_tv.tv_usec = (long)(state.flags.W * 1e6) % 1000000;
+    timeout_tv.tv_usec = ((long)state.flags.W * 1000000) % 1000000;
     r = setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, &timeout_tv, sizeof(timeout_tv));
     if (r < 0)
         error_and_exit("error : setsockopt 2");

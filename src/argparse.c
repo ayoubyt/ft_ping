@@ -11,7 +11,7 @@ void arg_parse(int argc, char **argv)
     state.flags.W = RCV_TIMEOUT;
     state.flags.t = IPDEFTTL;
 
-    while ((c = getopt(argc, argv, ":c:i:t:s:hvWf")) != -1)
+    while ((c = getopt(argc, argv, ":c:i:t:s:W:hvf")) != -1)
         switch (c)
         {
         case 'c':
