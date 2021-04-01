@@ -18,9 +18,9 @@ void receive_icmp_packet(int sd, uint8_t *rcvbuff, int rcvbuffsize)
     msghdr.msg_iovlen = 1;
 
     r = recvmsg(sd, &msghdr, 0);
-    if (r < 0)
-        error_and_exit("error : recvmsg");
-    handle_packet(rcvbuff);
+    if (r >= 0)
+        handle_packet(rcvbuff);
+        // error_and_exit("error : recvmsg");
 }
 
 void print_error_packet(struct ip *ip, struct icmp *nicmp, uint8_t error);

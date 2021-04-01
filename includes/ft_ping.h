@@ -36,7 +36,7 @@ typedef struct
     uint s;
     uint v;
     uint h;
-    uint W;
+    double W;
     double i;
 } flags_t;
 
