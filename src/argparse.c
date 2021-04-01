@@ -4,13 +4,6 @@ void arg_parse(int argc, char **argv)
 {
     char c;
 
-    // setting default values
-    // other values are zeroed (by default in gloal variable)
-    state.flags.s = DDSIZE;
-    state.flags.i = DTI;
-    state.flags.W = RCV_TIMEOUT;
-    state.flags.t = IPDEFTTL;
-
     while ((c = getopt(argc, argv, ":c:i:t:s:W:hvf")) != -1)
         switch (c)
         {

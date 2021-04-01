@@ -11,7 +11,7 @@ void send_icmp_packet(int sd,
 
 
     put_icmphdr(sendbuff, sendbuffsize);
-    gettimeofday(&state.time.last_req_tv, 0);
+    gettimeofday(&state.last_req_tv, 0);
     r = sendto(sd,
                sendbuff,
                sendbuffsize,

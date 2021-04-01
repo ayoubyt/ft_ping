@@ -3,10 +3,12 @@
 
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <signal.h>
 #include <sys/time.h>
 #include <netdb.h>
 #include <netinet/ip_icmp.h>
 #include <arpa/inet.h>
+
 
 #include "libft.h"
 
@@ -42,11 +44,10 @@ typedef struct
 
 typedef struct
 {
-    uint max;
-    uint min;
-    uint avg;
-    uint mdev;
-    struct timeval last_req_tv; // last icmp reqest time value
+    double max;
+    double min;
+    double avg;
+    double sum;
 } timevalues_t;
 
 typedef struct
@@ -60,7 +61,8 @@ typedef struct
     int pack_seq;  // icmp packet sequence counter
     int pack_id;   // icmp packet id
     int loop;      // packet sender loop condition
-    timevalues_t time;
+    struct timeval last_req_tv; // last icmp reqest time value
+    timevalues_t rtt;
 } state_t;
 
 void arg_parse(int argc, char **argv);
@@ -78,9 +80,14 @@ uint16_t checksum(uint8_t *data, uint16_t size);
 
 void receive_icmp_packet(int sd, uint8_t *rcvbuff, int rcvbuffsize);
 void handle_packet(uint8_t *packet);
-void print_packet(struct ip *ip, struct icmp *icmp);
+void print_packet(struct ip *ip, struct icmp *icmp, double timerange);
+void print_error_packet(struct ip *ip, struct icmp *nicmp, uint8_t error);
+
 
 void display_stats(long time_elapsed);
+void rtt_update(double val);
+void init_state();
+void sig_int_handler(int signal);
 
 extern state_t state;
 

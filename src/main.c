@@ -26,6 +26,9 @@ int main(int argc, char **argv)
     // secket timeout time value
     struct timeval timeout_tv;
 
+    // initialize 'state' global struct with default values
+    init_state();
+
     // setting id of all sent icmp packet to currrent
     // process id to filter incoming icmp packets based on it
     state.pack_id = getpid();
@@ -80,6 +83,10 @@ int main(int argc, char **argv)
     rcvbuff = malloc(rcvbuffsize);
     if (!rcvbuff)
         error_and_exit("error : malloc ");
+
+    // handling SIGINT signal (CTRL-c) by stopping the loop
+    // wjen SIGINT dilevered
+    signal(SIGINT, sig_int_handler);
 
     gettimeofday(&start_tv, 0);
     state.loop = 1;
