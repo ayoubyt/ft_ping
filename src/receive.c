@@ -20,6 +20,8 @@ void receive_icmp_packet(int sd, uint8_t *rcvbuff, int rcvbuffsize)
     r = recvmsg(sd, &msghdr, 0);
     if (r >= 0)
         handle_packet(rcvbuff);
+    else if (!state.flags.f)
+        perror("packet receive failed ");
 }
 
 void handle_packet(uint8_t *packet)
@@ -34,15 +36,18 @@ void handle_packet(uint8_t *packet)
 
         if ((uint16_t)RBS(icmp->icmp_id) == (uint16_t)state.pack_id)
         {
-            struct timeval current;
             double timerange;
+            struct timeval current;
 
             gettimeofday(&current, 0);
             timerange = TVMSDIFF(current, state.last_req_tv);
+            if (!state.flags.f)
+                print_packet(ip, icmp, timerange);
+            else
+                IG(write(1, "\b", 1));
 
-            print_packet(ip, icmp, timerange);
-            rtt_update(timerange);
             state.nreceived++;
+            rtt_update(timerange);
         }
     }
     else
@@ -54,17 +59,20 @@ void handle_packet(uint8_t *packet)
 
         if ((uint16_t)RBS(nicmp->icmp_id) == (uint16_t)state.pack_id)
         {
-            switch (icmp->icmp_type)
+            if (!state.flags.f)
             {
-            case ICMP_TIME_EXCEEDED:
-            case ICMP_DEST_UNREACH:
-                print_error_packet(ip, nicmp, icmp->icmp_type);
-                break;
-            default:
-                printf("unkown error..packet received with ICMP type %hu code %hu\n",
-                       icmp->icmp_type,
-                       icmp->icmp_code);
-                break;
+                switch (icmp->icmp_type)
+                {
+                case ICMP_TIME_EXCEEDED:
+                case ICMP_DEST_UNREACH:
+                    print_error_packet(ip, nicmp, icmp->icmp_type);
+                    break;
+                default:
+                    printf("unkown error..packet received with ICMP type %hu code %hu\n",
+                           icmp->icmp_type,
+                           icmp->icmp_code);
+                    break;
+                }
             }
             state.nerr++;
         }
@@ -77,8 +85,8 @@ void print_packet(struct ip *ip, struct icmp *icmp, double timerange)
     char source_name_str[NI_MAXHOST + 1] = {0};
 
     get_source_name_and_addr(ip, source_name_str, source_addr_str);
-
     inet_ntop(AF_INET, &ip->ip_src.s_addr, source_addr_str, sizeof(source_addr_str) - 1);
+
     printf(
         "%hu bytes from %s (%s): icmp_seq=%hu ttl=%hu time=%.1lf ms\n",
         RBS(ip->ip_len) - ip->ip_hl * 4,

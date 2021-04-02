@@ -2,7 +2,7 @@
 
 void display_stats(long time_elapsed)
 {
-    int loss = 100 - ((double)state.nreceived / state.nsent) * 100;
+    double loss = 100 - ((double)state.nreceived / state.nsent) * 100;
 
     printf("\n--- %s ping statistics ---\n", state.dst_canonical_name);
     printf("%d packets transmitted, %d received,",
@@ -10,7 +10,7 @@ void display_stats(long time_elapsed)
            state.nreceived);
     if (state.nerr > 0)
         printf(" +%d errors,", state.nerr);
-    printf(" %d%% packet loss, time %ldms\n",
+    printf(" %lf%% packet loss, time %ldms\n",
            loss,
            time_elapsed);
     if (state.nreceived > 0)

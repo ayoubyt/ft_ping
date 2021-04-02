@@ -49,6 +49,9 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
     state.dst_canonical_name = dst_addrinfos->ai_canonname;
+    inet_ntop(AF_INET,
+              &((struct sockaddr_in *)dst_addrinfos->ai_addr)->sin_addr.s_addr,
+              state.dst_addr, INET_ADDRSTRLEN);
 
     // creating a raw socket to work with icmp packets
     // eathernet and ip headers are handled by kernel
@@ -65,7 +68,6 @@ int main(int argc, char **argv)
     // setting timeout of socket receive wait time
     timeout_tv.tv_sec = state.flags.W;
     timeout_tv.tv_usec = (long)(state.flags.W * 1000000) % 1000000;
-
     r = setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, &timeout_tv, sizeof(timeout_tv));
     if (r < 0)
         error_and_exit("error : setsockopt 2");
@@ -86,6 +88,8 @@ int main(int argc, char **argv)
     // wjen SIGINT dilevered
     signal(SIGINT, sig_int_handler);
 
+    printf("PING %s (%s), %d(%d) bytes of data\n",
+           state.dst_canonical_name, state.dst_addr, state.flags.s, state.flags.s + 28);
     gettimeofday(&start_tv, 0);
     state.loop = 1;
     while (state.loop)
@@ -100,6 +104,11 @@ int main(int argc, char **argv)
 
     //  display stats
     display_stats(TVMSDIFF(end_tv, start_tv));
+
+    /frre allocated memory
+    freeaddrinfo(dst_addrinfos);
+    free(rcvbuff);
+    free(sendbuff);
 }
 
 // int main()

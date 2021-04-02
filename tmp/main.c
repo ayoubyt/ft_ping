@@ -9,18 +9,16 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-
-
-int main(int argc, char **argv){
-    struct timeval s;
-    struct timeval e;
-    int r;
-
-    r = gettimeofday(&s, 0);
-    printf("r = %d\n", r);
-    sleep(1);
-
-    r= gettimeofday(&e, 0);
-    printf("r = %d\n", r);
-    printf("ms = %ld\n", (e.tv_usec - s.tv_usec) / 1000);
+int main(int argc, char **argv)
+{
+    for (size_t i = 0; i < 10; i++)
+    {
+        printf("z");
+        fflush(stdout);
+        usleep(300 * 1000);
+        printf("\b");
+        fflush(stdout);
+        usleep(300 * 1000);
+    }
+    printf("\n");
 }

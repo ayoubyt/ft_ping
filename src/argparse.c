@@ -21,6 +21,7 @@ void arg_parse(int argc, char **argv)
             break;
         case 'i':
             state.flags.i = get_double(c, optarg, 0, -1);
+            state.flags.i_s = FALSE;
             break;
         case 'W':
             state.flags.W = get_double(c, optarg, 0, -1);
@@ -44,6 +45,8 @@ void arg_parse(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
     state.dst = argv[optind];
+    if (state.flags.f && !state.flags.i_s)
+        state.flags.i = 0;
 }
 
 uint get_int(char opt, char *str, int min, int max)

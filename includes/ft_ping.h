@@ -9,17 +9,15 @@
 #include <netinet/ip_icmp.h>
 #include <arpa/inet.h>
 
-
 #include "libft.h"
 
 // default data size after icmp header
 #define DDSIZE 56
-// defaulr timr interval in secons beteen each
+// default time interval in secons between each
 // sent icmp packet
 #define DTI 1
 // max time for socket to wait for imcp replies in seconds
 #define RCV_TIMEOUT 1
-
 
 // reverse byte order of short int
 #define RBS(x) (((x) >> 8) | ((x) << 8))
@@ -32,14 +30,17 @@
 
 typedef struct
 {
-    uint c;
-    uint t;
-    uint f;
-    uint s;
-    uint v;
-    uint h;
-    double W;
-    double i;
+    // variable to check i specification
+    // (if it's given or not)
+    t_bool i_s;
+    uint c;   // number of icmp packets to send
+    uint t;   // sett TTL pf packet
+    uint f;   // flood ping
+    uint s;   // size of icmp data
+    uint v;   // verbose (dosent do anything LOL)
+    uint h;   // print help
+    double W; // timeoute pf packet receive
+    double i; // interval between each packet sent
 } flags_t;
 
 typedef struct
@@ -54,13 +55,15 @@ typedef struct
 {
     flags_t flags;
     char *dst;
+    char dst_addr[INET_ADDRSTRLEN + 1];
+    char dst_rev_name[NI_MAXHOST + 1];
     char *dst_canonical_name;
-    uint nreceived; // number of icmp received
-    uint nsent;     // number of icmp packets sent
-    uint nerr; // number of errors occured
-    int pack_seq;  // icmp packet sequence counter
-    int pack_id;   // icmp packet id
-    int loop;      // packet sender loop condition
+    uint nreceived;             // number of icmp received
+    uint nsent;                 // number of icmp packets sent
+    uint nerr;                  // number of errors occured
+    int pack_seq;               // icmp packet sequence counter
+    int pack_id;                // icmp packet id
+    int loop;                   // packet sender loop condition
     struct timeval last_req_tv; // last icmp reqest time value
     timevalues_t rtt;
 } state_t;
@@ -84,7 +87,6 @@ struct addrinfo *get_sender_addrinfo(char *addr);
 void print_packet(struct ip *ip, struct icmp *icmp, double timerange);
 void print_error_packet(struct ip *ip, struct icmp *nicmp, uint8_t error);
 void get_source_name_and_addr(struct ip *ip, char *name, char *addr);
-
 
 void display_stats(long time_elapsed);
 void rtt_update(double val);

@@ -18,9 +18,11 @@ void send_icmp_packet(int sd,
     if (r < 0)
     {
         perror("error : sendto ");
-        exit(EXIT_FAILURE);
+        // exit(EXIT_FAILURE);
     }
     state.nsent++;
+    if (state.flags.f)
+        IG(write(1, ".", 1));
 }
 
 void put_icmphdr(void *packet, uint16_t size)
