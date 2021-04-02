@@ -105,7 +105,7 @@ int main(int argc, char **argv)
     //  display stats
     display_stats(TVMSDIFF(end_tv, start_tv));
 
-    /frre allocated memory
+    // free allocated memory
     freeaddrinfo(dst_addrinfos);
     free(rcvbuff);
     free(sendbuff);
