@@ -24,11 +24,8 @@ void receive_icmp_packet(int sd, uint8_t *rcvbuff, int rcvbuffsize)
 
 void handle_packet(uint8_t *packet)
 {
-    struct sockaddr_in source_addr;
     struct ip *ip;
     struct icmp *icmp;
-    // curent uinx epoch
-    int r;
 
     ip = (struct ip *)packet;
     icmp = (struct icmp *)(packet + ip->ip_hl * 4);
@@ -77,33 +74,32 @@ void handle_packet(uint8_t *packet)
 void print_packet(struct ip *ip, struct icmp *icmp, double timerange)
 {
     static char source_addr_str[INET_ADDRSTRLEN + 1] = {0};
-    struct addrinfo *sender_addrinfos;
+    char source_name_str[NI_MAXHOST + 1] = {0};
+
+    get_source_name_and_addr(ip, source_name_str, source_addr_str);
 
     inet_ntop(AF_INET, &ip->ip_src.s_addr, source_addr_str, sizeof(source_addr_str) - 1);
-    sender_addrinfos = get_sender_addrinfo(source_addr_str);
     printf(
         "%hu bytes from %s (%s): icmp_seq=%hu ttl=%hu time=%.1lf ms\n",
         RBS(ip->ip_len) - ip->ip_hl * 4,
-        sender_addrinfos->ai_canonname,
+        source_name_str,
         source_addr_str,
         RBS(icmp->icmp_seq),
         ip->ip_ttl,
         timerange);
-    freeaddrinfo(sender_addrinfos);
 }
 
 void print_error_packet(struct ip *ip, struct icmp *nicmp, uint8_t error)
 {
     static char source_addr_str[INET_ADDRSTRLEN + 1] = {0};
-    struct addrinfo *sender_addrinfos;
+    char source_name_str[NI_MAXHOST + 1] = {0};
 
-    inet_ntop(AF_INET, &ip->ip_src.s_addr, source_addr_str, sizeof(source_addr_str) - 1);
-    sender_addrinfos = get_sender_addrinfo(source_addr_str);
+    get_source_name_and_addr(ip, source_name_str, source_addr_str);
 
     printf(
         "%hu bytes from %s (%s): icmp_seq=%hu ",
         RBS(ip->ip_len) - ip->ip_hl * 4,
-        sender_addrinfos->ai_canonname,
+        source_name_str,
         source_addr_str,
         RBS(nicmp->icmp_seq));
     switch (error)
@@ -118,7 +114,6 @@ void print_error_packet(struct ip *ip, struct icmp *nicmp, uint8_t error)
         printf("\n");
         break;
     }
-    freeaddrinfo(sender_addrinfos);
 }
 
 struct addrinfo *get_sender_addrinfo(char *addr)
@@ -139,4 +134,18 @@ struct addrinfo *get_sender_addrinfo(char *addr)
         exit(EXIT_FAILURE);
     }
     return sender_addrinfos;
+}
+
+void get_source_name_and_addr(struct ip *ip, char *name, char *addr)
+{
+    struct sockaddr_in saddr;
+
+    ft_bzero((struct sockaddr *)&saddr, sizeof(saddr));
+    saddr.sin_family = AF_INET;
+    saddr.sin_addr = ip->ip_src;
+    getnameinfo((struct sockaddr *)&saddr,
+                sizeof(saddr),
+                name,
+                NI_MAXHOST, NULL, 0, NI_NAMEREQD);
+    inet_ntop(AF_INET, &ip->ip_src.s_addr, addr, INET_ADDRSTRLEN);
 }

@@ -6,8 +6,6 @@ int main(int argc, char **argv)
 {
     // socket descriptor
     int sd;
-    // destination address
-    struct sockaddr_in dst_addr;
     // destination addrress data
     struct addrinfo *dst_addrinfos;
     // hints for getaddrinfo function

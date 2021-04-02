@@ -6,9 +6,6 @@ void send_icmp_packet(int sd,
                       uint16_t sendbuffsize)
 {
     int r;
-    struct timeval tv;
-
-
 
     put_icmphdr(sendbuff, sendbuffsize);
     gettimeofday(&state.last_req_tv, 0);

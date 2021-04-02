@@ -29,7 +29,7 @@ LIBFT_HEADERS_DIR := $(LIBFT_DIR)/$(LIBFT_HEADERS_DIR)
 LIBFT := $(LIBFT_DIR)/$(LIBFT_BIN_DIR)/lib$(LIBFT_SUFF).a
 
 CC := gcc
-CCFLAGS := -g
+CCFLAGS := -Wall -Wextra -O3
 CCLINKFLAGS =
 
 # $(info $(SRCS_DIR) " :: " $(SRCS))

@@ -52,7 +52,7 @@ void init_state()
 ** when SIGINT (CTRL-c) is ent to the calling process
 */
 
-void sig_int_handler(int signal)
+void sig_int_handler()
 {
     state.loop = 0;
 }

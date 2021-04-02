@@ -55,9 +55,9 @@ typedef struct
     flags_t flags;
     char *dst;
     char *dst_canonical_name;
-    int nreceived; // number of icmp received
-    int nsent;     // number of icmp packets sent
-    int nerr; // number of errors occured
+    uint nreceived; // number of icmp received
+    uint nsent;     // number of icmp packets sent
+    uint nerr; // number of errors occured
     int pack_seq;  // icmp packet sequence counter
     int pack_id;   // icmp packet id
     int loop;      // packet sender loop condition
@@ -83,12 +83,13 @@ void handle_packet(uint8_t *packet);
 struct addrinfo *get_sender_addrinfo(char *addr);
 void print_packet(struct ip *ip, struct icmp *icmp, double timerange);
 void print_error_packet(struct ip *ip, struct icmp *nicmp, uint8_t error);
+void get_source_name_and_addr(struct ip *ip, char *name, char *addr);
 
 
 void display_stats(long time_elapsed);
 void rtt_update(double val);
 void init_state();
-void sig_int_handler(int signal);
+void sig_int_handler();
 
 extern state_t state;
 

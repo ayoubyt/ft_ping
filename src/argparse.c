@@ -48,7 +48,7 @@ void arg_parse(int argc, char **argv)
 
 uint get_int(char opt, char *str, int min, int max)
 {
-    uint    result;
+    int    result;
     int     r;
 
     r = sscanf(str, "%u", &result);
