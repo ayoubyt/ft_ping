@@ -111,24 +111,6 @@ int main(int argc, char **argv)
     free(sendbuff);
 }
 
-// int main()
-// {
-//     uint16_t u = 5 * 6;
-//     uint16_t ru;
-
-//     // char c = 'a';
-//     // u = c;
-//     ru = RBS(5 * 6);
-
-//     char *data = (char *)&u;
-//     for (size_t i = 0; i < 2; i++)
-//         printf("%02x ", data[i]);
-//     printf("\n");
-//     data = (char *)&ru;
-//     for (size_t i = 0; i < 2; i++)
-//         printf("%02x ", data[i]);
-//     printf("\n");
-// }
 
 void error_and_exit(const char *msg)
 {
