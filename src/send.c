@@ -39,13 +39,12 @@ void put_icmphdr(void *packet, uint16_t size)
     res->type = ICMP_ECHO;
     res->un.echo.id = RBS(pid);
     res->un.echo.sequence = RBS(seq);
-
     res->checksum = checksum(packet, size);
 }
 
 uint16_t checksum(uint8_t *data, uint16_t size)
 {
-    uint16_t sum = 0;
+    uint32_t sum = 0;
     uint16_t *data16 = (uint16_t *)(data);
 
     for (size_t i = 0; i < size / 2; i++)
@@ -53,8 +52,10 @@ uint16_t checksum(uint8_t *data, uint16_t size)
     if (size % 2 == 1)
     {
         uint16_t tmp = 0;
-        *(&tmp) = *(data + size - 1);
+        *((uint8_t *)&tmp) = data[size - 1];
         sum += tmp;
     }
-    return (~sum);
+    sum = (sum >> 16) + (sum & 0xFFFF);
+    sum += (sum >> 16);
+    return ((uint16_t)~sum);
 }
