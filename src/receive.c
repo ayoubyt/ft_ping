@@ -88,7 +88,7 @@ void print_packet(struct ip *ip, struct icmp *icmp, double timerange)
     inet_ntop(AF_INET, &ip->ip_src.s_addr, source_addr_str, sizeof(source_addr_str) - 1);
 
     printf("%hu bytes from ", RBS(ip->ip_len) - ip->ip_hl * 4);
-    if (source_name_str)
+    if (!*source_name_str)
         printf("%s", source_addr_str);
     else
         printf("%s (%s)", source_name_str, source_addr_str);
