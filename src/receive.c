@@ -21,7 +21,7 @@ void receive_icmp_packet(int sd, uint8_t *rcvbuff, int rcvbuffsize)
     if (r >= 0)
         handle_packet(rcvbuff);
     else if (!state.flags.f && errno != EINTR)
-            perror("packet receive failed ");
+        perror("packet receive failed ");
 }
 
 void handle_packet(uint8_t *packet)
@@ -87,11 +87,13 @@ void print_packet(struct ip *ip, struct icmp *icmp, double timerange)
     get_source_name_and_addr(ip, source_name_str, source_addr_str);
     inet_ntop(AF_INET, &ip->ip_src.s_addr, source_addr_str, sizeof(source_addr_str) - 1);
 
+    printf("%hu bytes from ", RBS(ip->ip_len) - ip->ip_hl * 4);
+    if (source_name_str)
+        printf("%s", source_addr_str);
+    else
+        printf("%s (%s)", source_name_str, source_addr_str);
     printf(
-        "%hu bytes from %s (%s): icmp_seq=%hu ttl=%hu time=%.1lf ms\n",
-        RBS(ip->ip_len) - ip->ip_hl * 4,
-        source_name_str,
-        source_addr_str,
+        ": icmp_seq=%hu ttl=%hu time=%.1lf ms\n",
         RBS(icmp->icmp_seq),
         ip->ip_ttl,
         timerange);

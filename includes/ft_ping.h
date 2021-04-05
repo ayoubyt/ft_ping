@@ -71,6 +71,7 @@ typedef struct
 void arg_parse(int argc, char **argv);
 uint get_int(char opt, char *str, int min, int max);
 double get_double(char opt, char *str, double min, double max);
+void print_help_and_exit();
 
 void error_and_exit(const char *msg);
 

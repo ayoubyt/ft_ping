@@ -31,7 +31,7 @@ void arg_parse(int argc, char **argv)
             break;
         case 'h':
             state.flags.h = 1;
-            break;
+            print_help_and_exit();
         case '?':
             fprintf(stderr, "error : unknown option `-%c'.\n", optopt);
             exit(EXIT_FAILURE);
@@ -51,8 +51,8 @@ void arg_parse(int argc, char **argv)
 
 uint get_int(char opt, char *str, int min, int max)
 {
-    int    result;
-    int     r;
+    int result;
+    int r;
 
     r = sscanf(str, "%u", &result);
     if (r != 1)
@@ -85,7 +85,7 @@ double get_double(char opt, char *str, double min, double max)
         fprintf(stderr, "error : invalid argument to -%c : '%s'\n", opt, str);
         exit(EXIT_FAILURE);
     }
-     if (min > -1 && result < min)
+    if (min > -1 && result < min)
     {
         fprintf(stderr, "error : invalid argument to -%c : min value is %lf while %lf specified.\n", opt, min, result);
         exit(EXIT_FAILURE);
@@ -96,4 +96,21 @@ double get_double(char opt, char *str, double min, double max)
         exit(EXIT_FAILURE);
     }
     return result;
+}
+
+void print_help_and_exit()
+{
+    printf("\
+Usage\n\
+    ping [options] <destination>\n\
+\n\
+    -f              flood ping\n\
+    -h              print help and exit\n\
+    -i <interval>   seconds between sending each packet\n\
+    -s <size>       use <size> as number of data bytes to be sent\n\
+    -t <ttl>        define time to live\n\
+    -v              verbose output\n\
+    -W <timeout>    time to wait for response\n\
+");
+    exit(2);
 }
