@@ -20,8 +20,8 @@ void receive_icmp_packet(int sd, uint8_t *rcvbuff, int rcvbuffsize)
     r = recvmsg(sd, &msghdr, 0);
     if (r >= 0)
         handle_packet(rcvbuff);
-    else if (!state.flags.f)
-        perror("packet receive failed ");
+    // else if (!state.flags.f)
+    //     perror("packet receive failed ");
 }
 
 void handle_packet(uint8_t *packet)
