@@ -29,7 +29,7 @@ PING google.com (172.217.19.46), 56(84) bytes of data
 3 packets transmitted, 3 received, 0.000000% packet loss, time 2830ms
 rtt min/avg/max/ = 26.688/26.955/27.411 ms
 ```
-> **note** : press CTRL-C to execute the program and vew statistcis
+> **note** : press CTRL-C to kill the program and view statistics
 
 for more otions :
 ```bash
